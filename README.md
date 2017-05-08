@@ -2,9 +2,7 @@ This repo contains ultrasound images, ultrasound image segmentations, and patien
 
 (Under Review)
 
-The repo containes a single file:  `USImageData.mat`
-
-This files contains the following Matlab variables:
+The repo containes the following files:
 
 * `im_muscle_chart.mat`: a Matlab table the muscle type, diagnosis, and deidentified patient ID of each US image
 * `patient_chart.mat`: a Matlab table listing the diagnosis of each deidentified patient ID (this information is also contained in `im_muscle_chart.mat` but this table gives a patient-centric overview as opposed to listing each image that was acquired)
