@@ -1,0 +1,4 @@
+numpy
+scipy
+theano
+keras==1.2.2

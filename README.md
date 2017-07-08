@@ -2,13 +2,17 @@ This repo contains ultrasound images, ultrasound image segmentations, and patien
 
 (Under Review)
 
-The repo containes the following files:
+Installation is as simple as running `pip install -r requirements.txt`
 
-* `AlexNet_Myopathy`: the CNN architecture in Keras, which you can pass US images through to obtain classifications
-* `im_muscle_chart.mat`: a Matlab table the muscle type, diagnosis, and deidentified patient ID of each US image
-* `patient_chart.mat`: a Matlab table listing the diagnosis of each deidentified patient ID (this information is also contained in `im_muscle_chart.mat` but this table gives a patient-centric overview as opposed to listing each image that was acquired)
+The repo contains `AlexNet_Myopathy`: the CNN architecture in Keras, which you can pass US images through to obtain classifications. An example is in the main() function.
 
-You can find the data files in our [latest release](https://github.com/jalbayd1/myopathy_US/releases/latest), which contains:
-* `im2D.mat`: Matlab cell arrays containing the US images. The images are ordered according to the row numbers of the table `im_muscle_chart.mat`.
-* `im2DSeg.mat`: Matlab cell array containing the US image segmentations denoting muscle and fat image regions.
-* `weights_PXX_FOLD_1.hdf5`: Keras model weights which must be loaded in AlexNet_Myopathy.py to do classifications for a given experiment.
+You can find the data and model weights in our [latest release](https://github.com/jalbayd1/myopathy_US/releases/latest), which contains:
+* `PatientData.mat`: The main data file, which contains:
+    * `im`: Matlab cell arrays containing the US images. The images are ordered according to the row numbers of the table `im_muscle_chart`.
+    * `imSeg.mat`: Matlab cell array containing the US image segmentations denoting muscle and fat image regions.
+    * `im_muscle_chart`: a Matlab table of the muscle type, diagnosis, and deidentified patient ID of each US image.
+    * `patient_chart`: a Matlab table listing the diagnosis of each deidentified patient ID (this information is also contained in `im_muscle_chart` but this table gives a patient-centric overview as opposed to listing each image that was acquired).
+* `PatientImages_PLOS2017.xlsx`: Similar to image_muscle_chart described above, but in an Excel spreadsheet format.
+* `weights_ProblemA_FOLD_1.hdf5`: Keras model weights which must be loaded in AlexNet_Myopathy.py to do classifications for Problem A.
+* `weights_ProblemB_FOLD_1.hdf5`: Keras model weights which must be loaded in AlexNet_Myopathy.py to do classifications for Problem B.
+* `weights_ProblemC_FOLD_1.hdf5`: Keras model weights which must be loaded in AlexNet_Myopathy.py to do classifications for Problem C.

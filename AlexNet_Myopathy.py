@@ -17,14 +17,16 @@
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+import os
+os.environ["KERAS_BACKEND"] = 'theano'
 
+from keras import backend as K
 from keras.models import Model
 from keras.layers import Flatten, Dense, Dropout, Activation, Input, merge
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
 from keras.layers.core import Lambda
-from keras import backend as K
-
 from keras.engine import Layer
+
 
 class Softmax4D(Layer):
     def __init__(self, axis=-1,**kwargs):
@@ -43,6 +45,7 @@ class Softmax4D(Layer):
         axis_index = self.axis % len(input_shape)
         return tuple([input_shape[i] for i in range(len(input_shape)) \
                       if i != axis_index ])
+
 
 def crosschannelnormalization(alpha = 1e-4, k=2, beta=0.75, n=5,**kwargs):
     """
@@ -64,6 +67,7 @@ def crosschannelnormalization(alpha = 1e-4, k=2, beta=0.75, n=5,**kwargs):
         return X / scale
 
     return Lambda(f, output_shape=lambda input_shape:input_shape,**kwargs)
+
 
 def splittensor(axis=1, ratio_split=1, id_split=0,**kwargs):
     def f(X):
@@ -88,6 +92,7 @@ def splittensor(axis=1, ratio_split=1, id_split=0,**kwargs):
         return tuple(output_shape)
 
     return Lambda(f,output_shape=lambda input_shape:g(input_shape),**kwargs)
+
 
 def AlexNet(num_outputs):
     inputs = Input(shape=(3,227,227))
@@ -135,18 +140,21 @@ def AlexNet(num_outputs):
 
 
 def main():
+    # NOTE: Must use Keras 1.2.2 with Theano backend, which can be set in ~/.keras/keras.json,
+    # or with os.environ['KERAS_BACKEND'] = 'theano', before importing keras
+    from keras.applications.imagenet_utils import preprocess_input
     import numpy as np
     from scipy.misc import imread, imresize
 
-    # Set num_outputs according to the number of classes for the experiment:
-    # 2-Class Problems: P1b, P1c, P2a, P3a
-    # 4-Class Problems: P1a, P1d, P2b, P3b
+    K.set_image_dim_ordering("th")
 
-    # Example using P1b:
+    # Set num_outputs according to the number of classes for the experiment (should be 2 for Problems A, B, or C):
+
+    # Example using Problem A:
     model = AlexNet(num_outputs=2)
 
     # Load the provided trained weights
-    model.load_weights("/PATH/TO/weights_P1b_FOLD_1.hdf5")
+    model.load_weights("/PATH/TO/weights_ProblemA_FOLD_1.hdf5")
 
     # Load an ultrasound image of some myopathy
     im = imread("/PATH/TO/ULTRASOUND/IMAGE.png")
@@ -154,12 +162,18 @@ def main():
     # Resize image to to match network input resolution of 227x227
     im = imresize(im, (227, 227))
 
+    # Convert from uint8 to float32
+    im = im.astype(np.float32)
+
     # Switch the dimension containing image color channels to first dimension (matches theano-style image dim ordering)
     im = np.transpose(im, (2, 0, 1))
 
     # Reshape image from (channels, height, width, channels) to (1, channels, height, width) to represent a batch size of 1
     # (you can classify multiple images in a larger batch if you wish)
     im = np.expand_dims(im, axis=0)
+
+    # Use the standard preprocessing function for ImageNet images (since we use AlexNet)
+    im = preprocess_input(im, dim_ordering='th')
 
     # Perform forward pass through network, and get probabilities for each class
     y_pred_proba = model.predict(im, batch_size=1)[0]
