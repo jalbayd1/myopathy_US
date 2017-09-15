@@ -1,6 +1,6 @@
 This repo contains ultrasound images, ultrasound image segmentations, and patient diagnosis charts for data used in the paper:
 
-(Under Review)
+*Automated diagnosis of myositis from muscle ultrasound: Exploring the use of machine learning and deep learning methods(https://doi.org/10.1371/journal.pone.0184059)*
 
 Installation is as simple as running `pip install -r requirements.txt`
 
